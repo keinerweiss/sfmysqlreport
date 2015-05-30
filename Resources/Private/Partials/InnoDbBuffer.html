@@ -1,20 +1,17 @@
 {namespace sf=StefanFroemken\Sfmysqlreport\ViewHelpers}
 
 <sf:innoDbBuffer status="{status}" variables="{variables}">
+
 	<div class="panel panel-default">
 		<div class="panel-heading">
 			<h3 class="panel-title">InnoDB Buffer Load</h3>
 		</div>
 		<div class="panel-body">
+			<div id="vis-innodb-bufferload" class="{logFile.status} radial-multi" data-values="3" data-value1="{load.dataPercent}" data-value2="{load.miscPercent}" data-value3="{load.freePercent}"></div>
 			<p>Following progressbar shows you how pages (a block with {status.innodbPageSize} Bytes) are currently balanced in InnoDB Buffer</p>
 			<p>If free InnoDB Buffer is below 15-20% it may indicate that you have to increase your innodb_buffer_pool_size</p>
 			<p>If free InnoDB Buffer is higher than 20-30% it may indicate that you should reduce innodb_buffer_pool_size</p>
-			<div class="progress">
-				<div class="progress-bar progress-bar-success" style="width: {load.dataPercent}%"></div>
-				<div class="progress-bar progress-bar-warning progress-bar-striped" style="width: {load.miscPercent}%"></div>
-				<div class="progress-bar progress-bar-info" style="width: {load.freePercent}%"></div>
-			</div>
-			<ul class="list-group">
+			<ul class="list-group" style="float:left;">
 				<li class="list-group-item">Total: {load.total}</li>
 				<li class="list-group-item list-group-item-success">Data: {load.data} ({load.dataPercent}%)</li>
 				<li class="list-group-item list-group-item-warning">Misc: {load.misc} ({load.miscPercent}%)</li>
@@ -28,6 +25,7 @@
 			<h3 class="panel-title">Hit Ratio</h3>
 		</div>
 		<div class="panel-body">
+			<div id="vis-innodb-hitratio" class="{hitRatio.status} radial" data-value="{hitRatio.value}"></div>
 			<p>{hitRatio.value}%</p>
 			<p>As higher as better.</p>
 			<p>Everything below 90 is really bad. 99 maybe OK, but is not perfect. Everything above 99.9 is great.</p>
@@ -42,12 +40,10 @@
 			<h3 class="panel-title">Hit Ratio by SF</h3>
 		</div>
 		<div class="panel-body">
+			<div id="vis-innodb-hitratiobysf" class="{hitRatioBySF.status} radial" data-value="{hitRatioBySF.value}" data-color2="green"></div>
 			<p>IMO we should have a factor of 1/1000 of speed between reading from HDD and reading from RAM.</p>
 			<p>So, the amount of reading from HDD * 1000 would be our nice-to-have value for reading from RAM.</p>
 			<p>100 / value of nice-to-have * innodb_buffer_pool_read_requests shows us a percentage value how far we are away from factor 1/1000.</p>
-			<div class="progress">
-				<div class="progress-bar progress-bar-{hitRatioBySF.status}" style="width: {hitRatioBySF.value}%"></div>
-			</div>
 		</div>
 	</div>
 
@@ -56,6 +52,7 @@
 			<h3 class="panel-title">Log File Size</h3>
 		</div>
 		<div class="panel-body">
+			<div id="vis-innodb-logfilesize" class="{logFile.status} radial" data-value="<sf:math value="100 / {logFile.niceToHave} * {logFile.value}" />" data-color2="red" data-color="green" data-color3="green"></div>
 			<p>Your current log file size is {logFile.value} Bytes.</p>
 			<p>A good value for your log files would be a little bit higher than: {logFile.niceToHave} Bytes.</p>
 			<p>Please call this test only on high peak of your server.</p>
@@ -88,3 +85,60 @@
 		</div>
 	</div>
 </sf:innoDbBuffer>
+
+<script>
+jQuery(function($) {
+	$('.radial').each(function() {
+		var $vis = $(this);
+		var vis = $vis.context;
+		var rp2 = radialProgress(vis)
+			.minValue(0.0)
+	        .maxValue(100.0)
+			.diameter(300)
+			.value(parseInt($vis.data('value')))
+			.render();
+	});
+	
+	$('.radial-multi').each(function() {
+		var $vis = $(this);
+		var color = d3.scale.ordinal().range(["#84d017", "#e09407", "#2427f0", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
+		
+	    var dataset = [
+	       { label: '1', count: Math.ceil($vis.data('value1')) }, 
+	       { label: '2', count: Math.ceil($vis.data('value2')) },
+	       { label: '3', count: Math.ceil($vis.data('value3')) }
+	     ];
+	
+	     var width = 270;
+	     var height = 270;
+	     var radius = Math.min(width, height) / 2;
+	     var donutWidth = 80;
+	
+	     //var color = d3.scale.category20();
+	
+	     var svg = d3.select(this)
+	       .append('svg')
+	       .attr('width', width)
+	       .attr('height', height)
+	       .append('g')
+	       .attr('transform', 'translate(' + (width / 2) + ',' + (height / 2) + ')');
+	
+	     var arc = d3.svg.arc()
+	       .innerRadius(radius - donutWidth)
+	       .outerRadius(radius);
+	       
+	     var pie = d3.layout.pie()
+	       .value(function(d) { return d.count; })
+	       .sort(null);
+	
+	     var path = svg.selectAll('path')
+	       .data(pie(dataset))
+	       .enter()
+	       .append('path')
+	       .attr('d', arc)
+	       .attr('fill', function(d, i) { 
+	         return color(d.data.label);
+	     	});	
+	});
+});
+</script>

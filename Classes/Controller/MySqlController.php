@@ -25,6 +25,7 @@ namespace StefanFroemken\Sfmysqlreport\Controller;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * @package sfmysqlreport
@@ -88,6 +89,15 @@ class MySqlController extends ActionController {
 	 * @return void
 	 */
 	public function innoDbBufferAction() {
+		/** 
+		 * @var \TYPO3\CMS\Extbase\Object\ObjectManager 
+		 */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** 
+		 * @var \TYPO3\CMS\Core\Page\PageRenderer $pageRenderer 
+		 */
+		$pageRenderer = $objectManager->get('TYPO3\\CMS\\Core\\Page\\PageRenderer');
+		$pageRenderer->loadJquery('latest', 'local');
 		$this->view->assign('status', $this->statusRepository->findAll());
 		$this->view->assign('variables', $this->variablesRepository->findAll());
 	}

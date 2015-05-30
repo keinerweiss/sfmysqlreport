@@ -1,0 +1,104 @@
+.radial {
+	width: 300px;
+	height: 300px;
+	box-sizing: border-box;
+	float: left;
+	
+	border-radius: 3px;
+	background-color: #FFFFFF;            
+	color: #000;
+}
+.radial .background {
+    fill: #FFFFFF;
+    fill-opacity: 1;
+}
+
+.radial .component {
+    fill: #e1e1e1;
+}
+
+.radial .label {
+    font-family:  Myriad, "Helvetic Neue", Helvetica, Arial;
+    text-anchor: middle;
+}
+
+.radial .arc {
+    stroke-weight: 0.5;
+    fill: #f0a417;
+}
+
+.radial .arc2 {
+    stroke-weight: 0.1;
+    fill: #b00d08;
+}
+
+.radial.warning .arc {
+	fill: #f0a417;
+}
+
+.radial.danger .arc {
+	fill: #cf0d08;
+}
+
+.radial.success .arc {
+	fill: #a4f017;
+}
+.radial.info .arc {
+	fill: #2427f0;
+}
+.radial.success .arc2 {
+    fill: #84d017;
+}
+.radial.warning .arc2 {
+    fill: #e09407;
+}
+.radial.danger .arc2 {
+    fill: #a00d08;
+}
+
+.radial[data-color2="green"] .component,
+.radial[data-color="green"] .arc {
+	fill: #a4f017;
+}
+
+.radial[data-color2="red"] .component,
+.radial[data-color="red"] .arc {
+	fill: #b00d08;
+}
+
+.radial-multi {
+	
+}
+.radial-multi {
+	width: 300px;
+	height: 300px;
+	box-sizing: border-box;
+	float: left;
+	
+	border-radius: 3px;
+	background-color: #FFFFFF;            
+	color: #000;
+}
+.radial-multi .background {
+    fill: #FFFFFF;
+    fill-opacity: 1;
+}
+
+.radial-multi .component {
+    fill: #e1e1e1;
+}
+
+.radial-multi .label {
+    font-family:  Myriad, "Helvetic Neue", Helvetica, Arial;
+    text-anchor: middle;
+}
+
+.radial-multi .arc {
+    stroke-weight: 0.5;
+    fill: #f0a417;
+}
+
+.radial-multi .arc2 {
+    stroke-weight: 0.1;
+    fill: #b00d08;
+}
